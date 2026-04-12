@@ -1,4 +1,10 @@
 fastapi
-uvicorn
-google-generativeai
+uvicorn[standard]
+langchain
+langchain-groq
+langchain-core
+langgraph
+pydantic
 python-dotenv
+httpx
+langchain-mcp-adapters
