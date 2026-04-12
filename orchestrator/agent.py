@@ -53,11 +53,14 @@ def _get_llm():
 
 async def _extract_details(llm, query: str) -> dict:
     """Step 1: Use LLM (plain text, no tools) to extract destination & preferences."""
-    prompt = f"""Extract travel details from this query. Reply ONLY with JSON, nothing else.
+    prompt = f"""Extract travel details from this query. 
+    
+    IMPORTANT: If the user provides a country (e.g., China, Japan, France), you MUST extract the most famous and relevant major city in that country (e.g., Beijing, Tokyo, Paris) to ensure our search tools return high-quality local data.
 
-Query: {query}
+    Query: {query}
 
-Format: {{"destination": "city name", "cuisine": "food type or local", "interests": "temples museums parks etc"}}"""
+    Reply ONLY with JSON.
+    Format: {{"destination": "city name", "cuisine": "food type or local", "interests": "temples museums parks etc"}}"""
 
     response = await llm.ainvoke([HumanMessage(content=prompt)])
     text = response.content.strip()
@@ -167,25 +170,30 @@ HOTELS DATA:
 {json.dumps(hotels_result, indent=2, default=str)}
 
 ABSOLUTE RULES — YOU MUST FOLLOW THESE:
-1. You MUST use the actual "name" field from the JSON data above. Do NOT omit names. Every hotel, place, and restaurant MUST show its real name.
-2. Use the LOCAL CURRENCY of {destination} for all prices. If the user's budget is in a different currency, mention the conversion (e.g. "Your budget of ₹45,000 ≈ ₩720,000").
-3. For restaurants, ALWAYS include the "address" field from the data.
-4. For hotels, estimate a realistic nightly price RANGE in local currency.
-5. For places, include the "address" and a short description.
-6. The itinerary MUST be a markdown table with columns: Day, Morning, Afternoon, Evening, Est. Daily Budget.
-7. Add a total row at the bottom of the itinerary table.
+1. You MUST use the actual "name" field from the JSON data above. If a place, hotel, or restaurant has a missing, generic (e.g. "unknown"), or invalid name, do NOT include it in your response.
+2. If tool results are limited (e.g. fewer than 3 options), use your internal knowledge about {destination} to provide unique recommendations. Do NOT use labels like "Recommended from our local guide database"—just list the names directly.
+3. If NO REAL data is found for a section (Hotels, Food, or Places) and you have no high-quality knowledge to supplement it for {destination}, OMIT that section entirely from your response. Do NOT show "No hotels/restaurants available" messages.
+4. Use the LOCAL CURRENCY of {destination} for all prices. If the user's budget is in a different currency, mention the conversion (e.g. "Your budget of ₹45,000 ≈ ₩720,000").
+5. For restaurants, ALWAYS include the "address" field from the data.
+6. For hotels, estimate a realistic nightly price RANGE in local currency.
+7. For places, include the "address" and a 2-line description (Line 1: what it is, Line 2: what to do there).
+8. ITINERARY VARIETY IS CRITICAL: Each day MUST be unique. Do NOT repeat the same activities daily. If you run out of unique tool-provided places, suggest logical activities like "Local park walk", "Visit a traditional market", or "Check out the city skyline".
+9. Add a total row at the bottom of the itinerary table.
+10. NEVER use bullet points (• or *) or bold headers with asterisks (like **Travel Tips**). Use plain text blocks or numbered lists for tips.
 
 FORMAT YOUR RESPONSE EXACTLY LIKE THIS:
 
-Hey there! Welcome to **TravelGuide** ✈️
+Hey there! Welcome to TravelGuide ✈️
 
-**{destination}** is an incredible choice! [2 enthusiastic sentences about this destination].
+{destination} is an incredible choice! [2 enthusiastic sentences about this destination]. 
+
+[If you searched for a city because the user mentioned a country, add: "To give you the best data, I've focused this plan on **{destination}**, the heart of the region."]
 
 [If user gave budget in a different currency, add: "Your budget of [amount] ≈ [converted amount in local currency]"]
 
 ---
 
-🏨 **Where to Stay**
+🏨 Where to Stay
 
 | Hotel | Type | Location | Est. Price/Night |
 |-------|------|----------|-----------------|
@@ -194,40 +202,46 @@ Hey there! Welcome to **TravelGuide** ✈️
 
 ---
 
-🗺️ **Must-Visit Places**
+🗺️ Must-Visit Places
 
-• **[ACTUAL place name from data]** — [type] — [address from data]
-  [1-line description]
+[ACTUAL place name from data] — [type] — [address from data]
+[Line 1: what it is]
+[Line 2: what to do there]
+
 [Repeat for 5-8 places]
 
 ---
 
-🍽️ **Food & Restaurants**
+🍽️ Food & Restaurants
 
-• **[ACTUAL restaurant name from data]** ([cuisine]) — 📍 [address from data]
-  [1-line description]
+[ACTUAL restaurant name from data] ([cuisine]) — 📍 [address from data]
+[Line 1: what it is]
+[Line 2: what to do there]
+
 [Repeat for 4-6 restaurants]
 
 ---
 
-📅 **Day-by-Day Itinerary**
+📅 Day-by-Day Itinerary
 
 | Day | Morning | Afternoon | Evening | Est. Daily Budget |
 |-----|---------|-----------|---------|------------------|
 | Day 1 | [activity] | [activity] | [activity] | [amount in local currency] |
-[Repeat for each day]
+[Repeat for each day - ENSURE VARIETY]
 | | | | **Total Est.** | **[sum in local currency]** |
 
 ---
 
-💡 **Travel Tips**
-• [3 practical tips for this destination]
+💡 Travel Tips
+1. [tip 1]
+2. [tip 2]
+3. [tip 3]
 
 _Prices are estimates. Always verify current rates before booking._"""
 
     try:
         response = await llm.ainvoke([
-            SystemMessage(content="You are TravelGuide, a premium AI travel planner. You MUST use markdown formatting with tables, bold headers, and bullet points. Always use the local currency of the destination. Be enthusiastic but concise."),
+            SystemMessage(content="You are TravelGuide, a premium AI travel planner. You MUST produce high-quality, variable itineraries. NEVER repeat activities daily. If the data is sparse, use your knowledge to suggest varied local experiences. Use markdown formatting with orange headers."),
             HumanMessage(content=format_prompt),
         ])
         final_answer = response.content

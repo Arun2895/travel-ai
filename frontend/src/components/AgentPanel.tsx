@@ -4,16 +4,18 @@ import { LayersIcon, CheckIcon } from './Icons';
 
 interface AgentPanelProps {
   steps: ToolStep[];
+  isLoading: boolean;
 }
 
-export const AgentPanel: React.FC<AgentPanelProps> = ({ steps }) => {
+export const AgentPanel: React.FC<AgentPanelProps> = ({ steps, isLoading }) => {
+  if (!isLoading) return null;
   if (steps.length === 0) return null;
 
   return (
-    <div className="w-[300px] bg-[#0A0A0A] border-l border-[rgba(255,255,255,0.07)] p-5 hidden lg:flex flex-col shrink-0 overflow-y-auto">
-      <div className="flex items-center gap-2 mb-6">
+    <div className="w-[300px] bg-[#0A0A0A] border-l border-[rgba(255,255,255,0.07)] p-6 hidden lg:flex flex-col shrink-0 overflow-y-auto relative z-20">
+      <div className="flex items-center gap-2 mb-8 pt-2">
         <LayersIcon size={16} className="text-[#F4600C]" />
-        <h3 className="font-[Syne,sans-serif] text-sm font-semibold text-[#F5F0EB] tracking-wide">Agent Trace</h3>
+        <h3 className="font-['Outfit',sans-serif] text-[15px] font-bold text-[#F5F0EB] tracking-wide leading-loose pb-1">Agent Trace</h3>
       </div>
 
       <div className="relative border-l border-[rgba(255,255,255,0.07)] ml-2.5 pb-4 space-y-6">

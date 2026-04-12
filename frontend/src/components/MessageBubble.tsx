@@ -35,12 +35,12 @@ function renderMarkdown(text: string): React.ReactNode {
 
     // Headers
     if (line.startsWith('### ')) {
-      elements.push(<h3 key={i} className="text-[14px] font-bold text-[#F5F0EB] mt-4 mb-2 font-[Syne,sans-serif]">{inlineFormat(line.slice(4))}</h3>);
+      elements.push(<h3 key={i} className="text-[14px] font-bold text-[#F4600C] mt-4 mb-2 font-['Outfit',sans-serif] pb-0.5">{inlineFormat(line.slice(4))}</h3>);
       i++;
       continue;
     }
     if (line.startsWith('## ')) {
-      elements.push(<h2 key={i} className="text-[15px] font-bold text-[#F5F0EB] mt-4 mb-2 font-[Syne,sans-serif]">{inlineFormat(line.slice(3))}</h2>);
+      elements.push(<h2 key={i} className="text-[15px] font-bold text-[#F4600C] mt-4 mb-2 font-['Outfit',sans-serif] pb-0.5">{inlineFormat(line.slice(3))}</h2>);
       i++;
       continue;
     }
@@ -51,7 +51,6 @@ function renderMarkdown(text: string): React.ReactNode {
       const content = line.replace(/^[\s]*[-*•]\s*/, '');
       elements.push(
         <div key={i} className={`flex gap-2 ${indent > 2 ? 'ml-4' : ''} mb-1.5`}>
-          <span className="text-[#F4600C] mt-0.5 shrink-0">•</span>
           <span className="text-[13px] text-[#C0C0B8] leading-relaxed">{inlineFormat(content)}</span>
         </div>
       );
@@ -73,8 +72,22 @@ function renderMarkdown(text: string): React.ReactNode {
       continue;
     }
 
-    // Regular paragraph
-    elements.push(<p key={i} className="text-[13px] text-[#C0C0B8] leading-relaxed mb-1.5">{inlineFormat(line)}</p>);
+    // Regular paragraph or styled section names
+    if (line.includes(' — ')) {
+      const [name, ...rest] = line.split(' — ');
+      elements.push(
+        <p key={i} className="text-[13px] text-[#C0C0B8] leading-relaxed mb-1.5">
+          <span className="text-[#F4600C] font-bold">{inlineFormat(name)}</span> 
+          <span className="text-[#888880]"> — </span>
+          {inlineFormat(rest.join(' — '))}
+        </p>
+      );
+    } else if (/^[🏨🗺️🍽️📅💡]/.test(line.trim())) {
+      // Color section titles starting with specific emojis orange
+      elements.push(<p key={i} className="text-[15px] font-bold text-[#F4600C] mt-4 mb-2 font-['Outfit',sans-serif] pb-0.5">{inlineFormat(line)}</p>);
+    } else {
+      elements.push(<p key={i} className="text-[13px] text-[#C0C0B8] leading-relaxed mb-1.5">{inlineFormat(line)}</p>);
+    }
     i++;
   }
 

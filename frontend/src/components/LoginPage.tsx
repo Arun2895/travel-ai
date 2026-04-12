@@ -44,12 +44,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onGuest }) => {
           <div className="w-9 h-9 bg-[#F4600C] rounded-[10px] flex items-center justify-center">
             <GlobeIcon size={18} className="text-white" />
           </div>
-          <span className="font-[Syne,sans-serif] text-xl font-bold tracking-tight text-[#F5F0EB]">
-            Travel<span className="text-[#F4600C]">Guide</span>
-          </span>
+          <div className="flex items-center font-['Outfit',sans-serif] text-[22px] font-bold tracking-tight pb-1">
+            <span className="text-[#F5F0EB]">Travel</span>
+            <span className="text-[#F4600C]">Guide</span>
+          </div>
         </div>
 
-        <h1 className="font-[Syne,sans-serif] text-3xl font-bold leading-tight text-[#F5F0EB] mb-2">
+        <h1 className="font-['Outfit',sans-serif] text-3xl font-bold leading-tight text-[#F5F0EB] mb-2 pb-1">
           Welcome back.
         </h1>
         <p className="text-[#888880] text-sm mb-9 font-light">
@@ -94,7 +95,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onGuest }) => {
 
           <button
             type="submit"
-            className="w-full relative overflow-hidden group py-[16px] bg-[#F4600C] text-white font-[Syne,sans-serif] text-[16px] font-bold rounded-[12px] transition-all duration-300 hover:shadow-[0_0_30px_rgba(244,96,12,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]"
+            className="w-full relative overflow-hidden group py-[16px] bg-[#F4600C] text-white font-['DM_Sans',sans-serif] text-[16px] font-bold rounded-[12px] transition-all duration-300 hover:shadow-[0_0_30px_rgba(244,96,12,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]"
           >
             <span className="relative z-10 tracking-wide">Enter the Gateway</span>
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(255,255,255,0.2)] to-transparent translate-x-[-150%] skew-x-[-20deg] group-hover:animate-[shine_1s_ease-out_forwards]" />
@@ -110,7 +111,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onGuest }) => {
 
         <button
           onClick={onGuest}
-          className="w-full py-[14px] bg-transparent border border-[rgba(244,96,12,0.5)] hover:bg-[#F4600C]/10 text-[#F4600C] hover:text-white font-[Syne,sans-serif] text-[15px] font-semibold rounded-[12px] transition-all duration-300 active:scale-[0.98]"
+          className="w-full py-[14px] bg-transparent border border-[rgba(244,96,12,0.5)] hover:bg-[#F4600C]/10 text-[#F4600C] hover:text-white font-['DM_Sans',sans-serif] text-[15px] font-semibold rounded-[12px] transition-all duration-300 active:scale-[0.98]"
         >
           Continue as guest
         </button>

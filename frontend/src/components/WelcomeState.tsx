@@ -37,7 +37,7 @@ const WelcomeState: React.FC<WelcomeStateProps> = ({ userName }) => {
         <GlobeIcon size={40} className="text-[#F4600C]" />
       </div>
 
-      <h2 className="font-[Syne,sans-serif] text-[28px] font-bold text-[#F5F0EB] mb-2">
+      <h2 className="font-['Outfit',sans-serif] text-[28px] font-bold text-[#F5F0EB] mb-2 pb-1">
         Hey, <span className="text-[#F4600C]">{userName}</span> ✦
       </h2>
       <p className="text-[#888880] text-[15px] max-w-[360px] leading-relaxed font-light mb-10">
@@ -54,7 +54,7 @@ const WelcomeState: React.FC<WelcomeStateProps> = ({ userName }) => {
             <div className="w-8 h-8 bg-[rgba(244,96,12,0.08)] rounded-lg flex items-center justify-center mb-3 group-hover:bg-[rgba(244,96,12,0.15)] transition-colors">
               {f.icon}
             </div>
-            <p className="text-[13px] font-semibold text-[#E0E0E0] mb-1.5 font-[Syne,sans-serif]">{f.title}</p>
+            <p className="text-[13px] font-bold text-[#E0E0E0] mb-1.5 font-['Outfit',sans-serif] pb-0.5">{f.title}</p>
             <p className="text-[11.5px] text-[#666] leading-relaxed group-hover:text-[#999] transition-colors">
               {f.desc}
             </p>

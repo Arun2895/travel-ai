@@ -9,15 +9,36 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ onNewChat, onLogout, userName, userEmail }) => {
-  const [time, setTime] = useState(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
+  const [time, setTime] = useState('--:--');
   const [showSettings, setShowSettings] = useState(false);
+  const [timezone, setTimezone] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
-    }, 10000);
-    return () => clearInterval(timer);
+    // Fetch timezone based on IP
+    fetch('http://ip-api.com/json')
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          setTimezone(data.timezone);
+        }
+      })
+      .catch(err => console.error('Timezone fetch failed:', err));
   }, []);
+
+  useEffect(() => {
+    const updateTime = () => {
+      const options: Intl.DateTimeFormatOptions = { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        timeZone: timezone 
+      };
+      setTime(new Date().toLocaleTimeString('en-US', options));
+    };
+
+    updateTime();
+    const timer = setInterval(updateTime, 10000);
+    return () => clearInterval(timer);
+  }, [timezone]);
 
   return (
     <div className="w-[280px] bg-[#0A0A0A] border-r border-[#1a1a1a] flex flex-col h-full shrink-0 relative overflow-hidden group">
@@ -27,12 +48,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewChat, onLogout, userName,
       <div className="p-6 relative z-10">
         {/* Logo */}
         <div className="flex items-center gap-3 mb-10 cursor-pointer">
-          <div className="w-9 h-9 bg-[#F4600C] rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(244,96,12,0.4)] animate-float">
+          <div className="w-9 h-9 bg-[#F4600C] rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(244,96,12,0.4)]">
             <GlobeIcon size={18} className="text-white" />
           </div>
-          <span className="font-[Syne,sans-serif] text-xl font-bold tracking-tight text-[#F5F0EB]">
-            Travel<span className="text-[#F4600C]">Guide</span>
-          </span>
+          <div className="flex items-center font-['Outfit',sans-serif] text-[22px] font-bold tracking-tight pb-1">
+            <span className="text-[#F5F0EB]">Travel</span>
+            <span className="text-[#F4600C]">Guide</span>
+          </div>
         </div>
 
         <button 
@@ -52,7 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewChat, onLogout, userName,
         {/* Widget 1: System Status */}
         <div className="p-4 rounded-2xl bg-[#0F0F0F] border border-[#1A1A1A] hover:border-[#333] transition-colors relative overflow-hidden">
           <div className="absolute -right-4 -top-4 w-16 h-16 bg-[rgba(244,96,12,0.03)] rounded-full" />
-          <h4 className="text-[11px] font-bold text-[#888880] uppercase tracking-[0.1em] mb-4 flex items-center gap-2">
+          <h4 className="text-[11px] font-bold text-[#888880] uppercase tracking-[0.1em] mb-4 flex items-center gap-2 font-['DM_Sans',sans-serif] pb-0.5">
             <LayersIcon size={12} className="text-[#F4600C]" /> Node Orbit
           </h4>
           <div className="flex items-center justify-between mt-2">
@@ -62,8 +84,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewChat, onLogout, userName,
             </div>
             <div className="text-right">
               <div className="text-[10px] text-[#555] mb-1">Status</div>
-              <div className="text-xs text-[#00E5FF] font-medium flex items-center gap-1.5 justify-end">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00E5FF] animate-pulse" /> Online
+              <div className="text-xs text-[#4BB543] font-medium flex items-center gap-1.5 justify-end">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#4BB543] animate-pulse" /> Online
               </div>
             </div>
           </div>
@@ -71,7 +93,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewChat, onLogout, userName,
 
         {/* Widget 2: Data Sources */}
         <div className="p-4 rounded-2xl bg-[#0F0F0F] border border-[#1A1A1A] hover:border-[#333] transition-colors">
-          <h4 className="text-[11px] font-bold text-[#888880] uppercase tracking-[0.1em] mb-4">Live Interfaces</h4>
+          <h4 className="text-[11px] font-bold text-[#888880] uppercase tracking-[0.1em] mb-4 font-['DM_Sans',sans-serif] pb-0.5">Live Interfaces</h4>
           <div className="space-y-3">
             {[
               { name: 'Places API', val: 'Connected' },
@@ -80,7 +102,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewChat, onLogout, userName,
             ].map((ext, i) => (
               <div key={i} className="flex items-center justify-between group/ext cursor-pointer">
                 <div className="flex items-center gap-2">
-                  <div className={`w-1.5 h-1.5 rounded-full ${i === 1 ? 'bg-[#9C27B0]' : 'bg-[#F4600C]'} group-hover/ext:scale-150 transition-transform`} />
+                  <div className={`w-1.5 h-1.5 rounded-full ${i === 1 ? 'bg-[#555550]' : 'bg-[#F4600C]'} group-hover/ext:scale-150 transition-transform`} />
                   <span className="text-[12px] text-[#A0A0A0] group-hover/ext:text-white transition-colors">{ext.name}</span>
                 </div>
                 <CheckIcon size={12} className="text-[#333] group-hover/ext:text-[#F4600C] transition-colors" />

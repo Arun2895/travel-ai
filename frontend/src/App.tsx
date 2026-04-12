@@ -55,12 +55,12 @@ function App() {
 
       <Sidebar onNewChat={handleNewChat} onLogout={handleLogout} userName={user.name} userEmail={user.email} />
       
-      <main className="flex-1 flex flex-col relative w-full h-full max-w-[900px] mx-auto border-x border-[rgba(255,255,255,0.07)] overflow-hidden bg-[#0A0A0A] z-10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+      <main className="flex-1 flex flex-col relative w-full h-full max-w-[1200px] mx-auto border-x border-[rgba(255,255,255,0.07)] overflow-hidden bg-[#0A0A0A] z-10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
         <div className={`flex-1 ${messages.length === 0 ? 'overflow-hidden' : 'overflow-y-auto'} custom-scrollbar flex flex-col pb-4 relative z-10`}>
           {messages.length === 0 ? (
             <WelcomeState userName={user.name} onSuggestion={sendMessage} />
           ) : (
-            <div className="flex-1 w-full max-w-[760px] mx-auto pt-6 pb-20">
+            <div className="flex-1 w-full max-w-[1000px] mx-auto pt-6 pb-20">
               {messages.map((msg) => (
                 <MessageBubble key={msg.id} message={msg} />
               ))}
@@ -72,7 +72,7 @@ function App() {
         <ChatInput onSend={sendMessage} disabled={isLoading} />
       </main>
 
-      <AgentPanel steps={toolSteps} />
+      <AgentPanel steps={toolSteps} isLoading={isLoading} />
     </div>
   );
 }
